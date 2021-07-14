@@ -6,11 +6,9 @@ To participate in thisworkshop, you will need access to the software described b
 
 [R](http://www.r-project.org/) is a programming language that is especially powerful for data exploration, visualization, and statistical analysis. To interact with R, we use [RStudio](http://www.rstudio.com/).
 
-For this class, please install **R Version 3.6.3**. You'll notice that this is not the most recent version, but it is more stable than the newer 4.0. 
+To download R, go to [CRAN](https://cran.r-project.org/) (the **C**omprehensive **R** **A**rchive **N**etwork). Ensure that you download the latest release of **R Version 4.0**.
 
 If you use a Mac, this will require at least 10.11 (El Capitan) as your OS. If you use a PC, anything Windows 7 or later will be sufficient.
-
-To download R, go to [CRAN](https://cran.r-project.org/) (the **C**omprehensive **R** **A**rchive **N**etwork). Ensure that you download **R Version 3.6.3**.
 
 ## R Studio
 

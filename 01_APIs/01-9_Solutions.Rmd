@@ -1,0 +1,99 @@
+---
+title: "Web APIs: Solutions"
+author: "Rochelle Terman"
+date: "2021"
+output: html_document
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rtweet)
+library(lubridate)
+```
+
+### RTweet
+
+#### Challenge 1: Hashtag Challenge. {-}
+
+Using the documentation for `search_tweets` as a guide, try pulling the 2,000 most recent tweets that include `#DukeEllington` OR `"Duke Ellington"` -- be sure to exclude retweets from the query.
+
+1. Why did your query not return 2,000 results?
+
+2. Identify the user that has used either the hashtag or the string in the greatest number of tweets -- where is this user from?
+
+```{r, message=FALSE}
+# Solutions
+duke <- search_tweets(
+  q = ' #DukeEllington OR "Duke Ellington" ',
+  n = 2000,
+  include_rts = FALSE
+)
+
+duke %>%
+  count(user_id, location) %>%
+  arrange(desc(n))
+```
+
+#### Challenge 2. {-}
+
+Pick your favorite musical artist and collect the 1,000 most recent tweets they are mentioned in (either by their handle or plain text). What is the most frequently used hashtag in these tweets other than #artistname? 
+
+```{r}
+music <- search_tweets(
+  q = '@iamcardib OR "cardi b"',
+  n = 1000,
+  include_rts = FALSE
+)
+
+music %>%
+  mutate(hashtags = as.character(hashtags)) %>%
+  filter(!is.na(hashtags),
+         !str_detect(hashtags, "c\\(")) %>%
+  count(hashtags) %>%
+  arrange(desc(n))
+```
+
+#### Challenge 3. {-}
+
+Run the code below to by pull the 1,000 most recent tweets from 5 UChicago faculty members:
+
+```{r}
+profs1000 <- get_timeline(
+  user = c("carsonaust", "profpaulpoast", "pstanpolitics", 
+           "rochelleterman", "bobbygulotty"),
+  n = 1000
+)
+```
+
+Which professors in the `profs1000` data use their iPhone to tweet? What percentage of their total tweets were sent from their iPhone?
+
+```{r}
+profs1000 %>%
+  count(screen_name, source) %>%
+  arrange(desc(n)) %>%
+  group_by(screen_name) %>%
+  mutate(total_n = sum(n)) %>%
+  mutate(percentage = n / total_n) %>%
+  filter(source == "Twitter for iPhone")
+```
+
+
+### API Queries
+
+#### Challenge 1: Adding a Date Range. {-}
+
+```{r eval = F}
+r <- GET(base.url, query = list(`q` = search_term,
+                                `api-key` = key,
+                                `begin_date` = '20050101',
+                                `end_date` = '20051231'))
+```
+
+#### Challenge 2: Specifying a Results Page. {-}
+
+```{r eval = F}
+r <- GET(base.url, query = list(`q` = search_term,
+                                `api-key` = key,
+                                `page` = 1))
+```

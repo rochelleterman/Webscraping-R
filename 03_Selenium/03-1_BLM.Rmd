@@ -1,0 +1,91 @@
+---
+title: "Selenium"
+author: "3I: Webscraping and Data Management in R"
+date: "Aug 2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Example 2: Scraping Black Lives Matter Protest Events
+
+```{r}
+library(RSelenium)
+library(wdman)
+library(tidyverse)
+library(rvest)
+
+# Start a selenium server and browser
+rD <- rsDriver(browser = "firefox")
+remDr <- rD[["client"]]
+
+# check status
+remDr$getStatus()
+
+# navigate
+remDr$navigate("https://elephrame.com/textbook/BLM/chart")
+```
+
+### Scraping Page 1
+
+```{r}
+# get all events
+events <- remDr$findElements(using = "css selector", value = ".chart")
+
+# extract info from 1 event
+a_event <- events[[1]]
+
+date <- a_event$findChildElements(using = "css selector", value = ".protest-start")[[1]]
+date_text <- date$getElementText()[[1]]
+date_text
+
+location <- a_event$findChildElements(using = "css selector", value = ".item-protest-location")[[1]]
+location_text <- location$getElementText()[[1]]
+location_text
+
+# function to get info from one event
+get_event <- function(a_event){
+  date <- a_event$findChildElements(using = "css selector", value = ".protest-start")[[1]]
+  date_text <- date$getElementText()[[1]]
+
+  location <- a_event$findChildElements(using = "css selector", value = ".item-protest-location")[[1]]
+  location_text <- location$getElementText()[[1]]
+  
+  all_info <- list(date = date_text,
+                   location = location_text)
+  
+  return(all_info)
+}
+get_event(events[[2]])
+
+# apply to all event elements
+all_events <- map_dfr(events, get_event)
+```
+
+### Scraping Page 2
+
+```{r}
+# find pagination
+pages <- remDr$findElements(using = "css selector", value = "#blm-results .inactive")
+
+# we want the first item
+pages[[1]]$getElementText()
+
+# click on it
+pages[[1]]$clickElement()
+
+# extract event info info
+events <- remDr$findElements(using = "css selector", value = ".chart")
+
+remDr$click()
+
+all_events <- map(events, get_event)
+```
+
+### Looping through results (Challenge)
+
+```{r}
+# This would require looping through pages 1-240.
+```
+
+

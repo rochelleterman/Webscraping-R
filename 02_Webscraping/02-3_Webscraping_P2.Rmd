@@ -1,0 +1,136 @@
+---
+title: "Webscraping Part II"
+author: "Rochelle Terman"
+date: "2021"
+output: html_document
+---
+
+## Webscraping Part II
+
+In this week's lecture, we introduced some tools to collect pieces of data from individual presidential documents. For this assignment, we will be looking at __all__ documents in the database that contain the string "space exploration." Our goals in this problem set are:
+
+1. To scrape all documents returned from [this search query](https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100)
+
+2. To organize this data into a dataframe and ultimately output a CSV file.
+
+The function below passes the URL of an individual document, scrapes the information from that document, and returns this information in a list.
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(stringr)
+library(purrr)
+library(lubridate)
+
+scrape_docs <- function(URL){
+  doc <- read_html(URL)
+
+  speaker <- html_nodes(doc, ".diet-title a") %>% 
+    html_text()
+  
+  date <- html_nodes(doc, ".date-display-single") %>%
+    html_text() %>%
+    mdy()
+  
+  title <- html_nodes(doc, "h1") %>%
+    html_text()
+  
+  text <- html_nodes(doc, "div.field-docs-content") %>%
+    html_text()
+  
+  all_info <- list(speaker = speaker, date = date, title = title, text = text)
+  
+  print(str_c("scraping: ", title))
+  return(all_info)
+}
+```
+
+### Solution
+
+There are likely many ways to achieve this task. Here's one solution:
+
+#### Step 1: Write function `scrape_urls` to scrape URLs of individual search results.
+
+The following function passes a page of search results, and returns a vector of URLs, each URL corresponding to an individual document.
+
+```{r, warning=FALSE, message=FALSE}
+scrape_urls <- function(path) {
+  
+  #Download HTML of webpage
+  html <- read_html(path) 
+  
+  #select element with document URLs
+  links <- html_nodes(html, ".views-field-title a") %>% 
+                html_attr("href")
+  
+  #output results
+  return(links) 
+}
+
+scrape_test <- scrape_urls("https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100")
+
+scrape_test[1:10]
+```
+
+#### Step 2. Iterate over results pager to collect all URLs
+
+`scrape_urls` collects all of the relative URLs from the first page of our search results (100 documents). While this is a good start, we have 4 pages of search results (325 results total) and need to collect the URLs of ALL results, from ALL result pages.
+
+First, let's grab the path of all 4 result pages, and store that result in an object called `all_pages`:
+
+```{r}
+all_pages <- str_c("https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space%20exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100&page=", 0:3)
+```
+
+Now, we can use `scrape_urls` to collect the URLs from all the pages of search results. We store the results as a character vector called `all_urls`. 
+
+```{r, warning=FALSE, message=FALSE}
+all_urls <- map(all_pages, scrape_urls) %>%
+  unlist
+
+# uncomment to test -- should be 325 docs
+# length(all_urls)
+```
+
+#### Step 3. Modify to full path
+
+The `HREF` we got above is what's called a *relative* URL: i.e., it looks like this:
+
+`/documents/special-message-the-congress-relative-space-science-and-exploration`
+
+as opposed to having a full path, like:
+
+`http://www.presidency.ucsb.edu/documents/special-message-the-congress-relative-space-science-and-exploration`
+
+The following code converts the relative paths to full paths, and saves them in an object called `all_full_urls`.
+
+```{r, warning=FALSE, message=FALSE}
+all_full_urls <- str_c("https://www.presidency.ucsb.edu", all_urls)
+all_full_urls[1:10]
+```
+
+#### Step 4. Scrape documents
+
+Now that we have the full paths to each document, we're ready to scrape each document.
+
+We'll use the `scrape_docs` function (given above), which  accepts a URL of an individual record, scrapes the page, and returns a list containing the document's date, speaker, title, and full text.
+
+Using this function, we'll iterate over `all_full_urls` to collect information on all the documents. We save the result as a dataframe, with each row representing a document.
+
+Note: This might take a few minutes.
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
+final_df <- map(all_full_urls, scrape_docs) %>%
+  bind_rows() 
+```
+
+#### Step 5. Print and write
+
+We'll print the dataframe's structure, write the csv, and we're done!
+
+```{r}
+str(final_df)
+write.csv(final_df, "data/space.csv", row.names = F)
+```
+
+

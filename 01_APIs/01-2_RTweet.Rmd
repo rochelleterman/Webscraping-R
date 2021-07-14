@@ -1,0 +1,104 @@
+---
+title: "RTweet"
+author: "Rochelle Terman"
+date: "2021"
+output: html_document
+---
+
+
+## Collecting Twitter Data with `RTweet`
+
+Twitter actually has two separate APIs:
+
+1. The __REST API__ allows you to read and write Twitter data. For research purposes, this allows you to search the recent history of tweets and look up specific users.
+2. The __Streaming API__ allows you to access public data flowing through Twitter in real-time. It requires your R session to be running continuously, but allows you to capture a much larger sample of tweets while avoiding rate limits for the REST API.
+
+There are several packages for R for accessing and searching Twitter. In this unit, we'll practice using the `RTweet` library, which allows us to easily collect data from Twitter's REST and stream APIs.
+
+### What is in `Rtweet`?
+
+`Rtweet` is a plug-and-play R package that allows you to easily access Twitter's REST and streaming APIs
+And it's free! All you need is a Twitter account to get started.
+
+* Collection of functions to access data from Twitter
+    * Let's quickly look at [the documentation](https://cran.r-project.org/web/packages/rtweet/rtweet.pdf) 
+    * Some useful functions: `get_timeline`, `search_tweets`, `search_users`
+    
+* Shortcomings:
+    * Finite amount of data you can pull
+    * Challenges for reproducible code: every time you run, you’ll get different results
+
+### Setting up `RTweet`
+
+To use `RTweet`, follow these steps:
+
+1. If you don't have a Twitter account, create one [here](https://twitter.com/i/flow/signup).
+2. Install the `RTweet` package from CRAN.
+2. Load the package into R.
+3. Send a request to Twitter's API by calling any of the package's functions, like `search_tweets` or` get_timeline`.
+4. Approve the browser popup (to authorize the `rstats2twitter` app).
+5. Now, you're ready to use RTweet!
+
+Let's go ahead and load `RTweet` along with some other helpful functions:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rtweet)
+library(lubridate)
+library(kableExtra)
+```
+
+### UChicago Political Science Prof Tweets
+
+Let's explore the `RTweet` package to see what we can learn about the tweeting habits of UChicago Political Science faculty.
+
+The function `get_timeline` will pull the most recent `n` number of tweets from a given handle(s). To pull tweets from multiple handles, write out a vector of the handles in the `user` argument.
+
+Let's pull tweets from five faculty members in the department.
+
+```{r}
+profs <- get_timeline(
+  user = c("carsonaust", "profpaulpoast", "pstanpolitics", "rochelleterman", "bobbygulotty"),
+  n = 1000
+)
+kable(head(profs))
+```
+
+Now, let's visualize which professors are tweeting the most, by week.
+
+```{r, warning=FALSE}
+profs %>%
+  group_by(screen_name) %>%
+  mutate(created_at = as.Date(created_at)) %>%
+  filter(created_at >= "2019-06-15") %>%
+  ts_plot(by = "week")
+```
+
+
+### Hashtags and Text Strings
+
+We can also use `RTweet` to explore certain hashtags or text strings.
+
+Let's take Duke Ellington again -- we can use `search_tweets` to pull the most recent n number of tweets that include the hashtag `#DukeEllington` or the string `"Duke Ellington"`.
+
+#### Hashtag Challenge {-}
+
+Using the documentation for `search_tweets` as a guide, try pulling the 2,000 most recent tweets that include `#DukeEllington` or `"Duke Ellington"` -- be sure to exclude retweets from the query.
+
+1. Why didn't your query return 2,000 results?
+
+2. Identify the user that has used either the hashtag or the string in the greatest number of tweets -- where is this user from?
+
+```{r, message=FALSE}
+duke <- search_tweets(
+  q = '#DukeEllington OR "Duke Ellington"',
+  n = 2000,
+  include_rts = FALSE
+)
+
+duke %>%
+  group_by(user_id, location) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+```
+

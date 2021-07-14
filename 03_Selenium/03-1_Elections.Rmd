@@ -1,0 +1,201 @@
+---
+title: "Selenium"
+author: "3I: Webscraping and Data Management in R"
+date: "Aug 2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Selenium
+
+Selenium is an umbrella project focused on [automating web browsers](https://www.selenium.dev/documentation/en/). 
+
+Selenium comprises many different tools, libraries, and APIs. But the basic goal is **web browser automation**: writing code to remotely control a web browser (e.g. Chrome, Firefox) as if we were a real user surfing the web. With Selenium, we can enter text into fields, select drop-down menus, check boxes, and click on links.
+
+Selenium is used primarily for front-end testing of websites. But we can also use it to level up our webscraping game. So far, we've been using `RVest` to read static HTML from a URL. In other words, we never had to open an actual browser. But what if that site uses javascript to dynamically display HTML on the single URL 
+
+To use Selenium, we need to run a Selenium Server, written in Java, that controls the browser on our computer. The package `RSelenium` allows us to connect to this server from within `R`. RSelenium provides R bindings (i.e., translation code) for accessing a Selenium **Webdriver**. 
+
+`RSelenium` features a nice vignette, available [here.](https://docs.ropensci.org/RSelenium/articles/basics.html)
+
+```{r}
+library(RSelenium)
+library(wdman)
+library(tidyverse)
+library(rvest)
+
+# Start a selenium server and browser
+rD <- rsDriver(browser = "firefox")
+remDr <- rD[["client"]]
+
+# check status
+remDr$getStatus()
+
+# navigate
+remDr$navigate("http://www.google.com")
+# obj$function("arg") 
+```
+
+### Scraping election data from West Bengal 
+
+```{r}
+remDr$navigate("http://wbsec.gov.in/results/panchayat_election_detailed_result?election_year=2013")
+```
+
+Why can't we scrape this site using `RVest`?
+
+### Selecting from the `District` Menu
+
+In order to select from a drop-down menu, we need to go through 2 steps:
+
+1. Click on the **menu.**
+
+We can use the method `findElements` to find an element on the page by its name. An easy way to do this is to inspect the element.
+
+```{r}
+# find "district" drop down
+district <- remDr$findElement(using = "name", value = "zilla_parishad")
+
+class(district)
+?webElement
+
+district$getElementText()
+district$clickElement()
+```
+
+2. Click on the **option.**
+
+Now if we want to get the different options in this drop down, we can do the same. You'll notice that each name is associated with a unique value.
+
+```{r}
+# find options in that drop down
+district$selectTag() #returns options
+
+# store all elements for options
+district_options <- district$findChildElements(using = "css selector", value = "option")
+
+# get first option
+district_first <- district_options[[2]]
+district_name <- district_first$getElementText()[[1]]
+district_name
+
+# click on that
+district_first$clickElement()
+```
+
+### Challenge 1: Selecting from the `Polling Data` Menu
+
+Fill in the code chunk below to select the first option from the  "Polling Date" drop down.
+
+```{r}
+# YOUR CODE HERE
+
+# find "polling" drop down
+polling <- remDr$findElement(using = "name", value = "election_date")
+
+# find options
+polling_options = polling$findChildElements(using = "css selector", value = "option")
+
+# get first
+polling_first <- polling_options[[2]]
+
+# click on that
+polling_first$clickElement()
+```
+```{r}
+# YOUR CODE HERE
+```
+
+### Getting the results
+
+Let's click "submit" to get the results:
+
+```{r}
+submit <- remDr$findElement(using = "name", value = "submit")
+submit$clickElement()
+```
+
+Our selections brought us to a table. Now let's get the underlying html. First we'll identify it by its CSS selector, and then use the `getPageSource` method.
+
+```{r}
+# select the table element
+table = remDr$findElement(using = "class", value = "table_data")
+
+# extract html
+table_html <- table$getPageSource()
+table_html
+```
+
+To parse the html, we'll use `RVest`:
+
+```{r}
+# read HTML
+table_html <- read_html(table_html[[1]])
+
+# handy-dandy function to parse html tables into dataframes -- and it's vectorized!
+table_dfs <- html_table(table_html, fill = F)
+
+# let's check it out
+knitr::kable(table_dfs[[1]])
+table_dfs
+```
+
+### Parsing the tables
+
+What a mess! They should have taken my data management course. Let's use our `tidyverse` skills to clean this up.
+
+```{r}
+# do it with just one table.
+a_table <- table_dfs[[1]]
+
+# make election_level database
+election_level <- a_table %>%
+  select(`Seat Name`:`Votes Rejected`) %>%
+  mutate(District = district_name) %>%
+  head(1)
+
+# make candidate_level database
+candidate_level <- a_table %>%
+  select(`Seat Name`, OSN:`Vote Secured`) %>%
+  mutate(District = district_name,
+         `Seat Name` = `Seat Name`[1])
+```
+
+Let's transform this code into a function and apply it to all the tables.
+
+```{r}
+# make functions and loop
+parse_election <- function(table_i) {
+  
+  # make election_level database
+  election_level <- table_i %>%
+    select(`Seat Name`:`Votes Rejected`) %>%
+    mutate(District = district_name) %>%
+    head(1)
+  
+  return(election_level)
+}
+
+parse_candidates <- function(table_i) {
+  
+  # make candidate_level database
+  candidate_level <- table_i %>%
+    select(`Seat Name`, OSN:`Vote Secured`) %>%
+    mutate(District = district_name,
+           `Seat Name` = `Seat Name`[1])
+  
+  return(candidate_level)
+}
+  
+elections <- map_dfr(table_dfs, parse_election)
+candidates <- map_dfr(table_dfs, parse_candidates)
+```
+
+### Challenge 2
+
+Using the code above as a guide, write a program that loops through all the options in the `Distrct` menu, grabs the results, and parses the data into a tidy dataframe.
+
+```{r}
+# YOUR CODE HERE
+```
