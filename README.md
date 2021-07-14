@@ -1,8 +1,11 @@
 # Data Access: Webscraping with R
 
 **Data Science Summer School**
+
 July 20, 2021
+
 4:00 - 8:15pm CEST
+
 https://socialdatascience.network/courses/webscraping.html
 
 **Instructor**: [Rochelle Terman](http://rochelleterman.com/), rterman@uchicago.edu
