@@ -35,11 +35,11 @@ To use `RTweet`, follow these steps:
 1. If you don't have a Twitter account, create one [here](https://twitter.com/i/flow/signup).
 2. Install the `RTweet` package from CRAN.
 2. Load the package into R.
-3. Send a request to Twitter's API by calling any of the package's functions, like `search_tweets` or` get_timeline`.
+3. Send a request to Twitter's API by calling any of the package's functions, like `search_tweets` or `get_timeline`.
 4. Approve the browser popup (to authorize the `rstats2twitter` app).
 5. Now, you're ready to use RTweet!
 
-Let's go ahead and load `RTweet` along with some other helpful functions:
+Let's go ahead and load `RTweet` along with some other helpful packages:
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -70,7 +70,7 @@ Now, let's visualize which professors are tweeting the most, by week.
 profs %>%
   group_by(screen_name) %>%
   mutate(created_at = as.Date(created_at)) %>%
-  filter(created_at >= "2019-06-15") %>%
+  filter(created_at >= "2021-01-01") %>%
   ts_plot(by = "week")
 ```
 
@@ -79,7 +79,7 @@ profs %>%
 
 We can also use `RTweet` to explore certain hashtags or text strings.
 
-Let's take Duke Ellington again -- we can use `search_tweets` to pull the most recent n number of tweets that include the hashtag `#DukeEllington` or the string `"Duke Ellington"`.
+Let's use Duke Ellington as an example -- we can use `search_tweets` to pull the most recent n number of tweets that include the hashtag `#DukeEllington` or the string `"Duke Ellington"`.
 
 #### Hashtag Challenge {-}
 
@@ -97,8 +97,7 @@ duke <- search_tweets(
 )
 
 duke %>%
-  group_by(user_id, location) %>%
-  summarise(n = n()) %>%
+  count(user_id, location) %>%
   arrange(desc(n))
 ```
 

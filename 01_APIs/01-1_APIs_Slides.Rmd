@@ -67,9 +67,9 @@ __Rule of Thumb__: Check for API first. If not available, scrape.
 
 * take on a variety of formats 
 
-* majority adhere to a particular style known as **Reperesentational State Transfer** or **REST**
+* majority adhere to a particular style known as **Representational State Transfer** or **REST**
 
-* "RESTful" APIs are conveinent because we can use them to query databases using URLs 
+* "RESTful" APIs are convenient because we can use them to query databases using URLs 
 
 
 ---
@@ -119,7 +119,7 @@ So can change our Google search by adding some terms to the URL.
 
 * For instance, I open my web browser and type in http://www.wikipedia.org.  Once I hit return, I'd see a webpage.
 
-* Several different processes occured, however, between me hitting "return" and the page finally being rendered. 
+* Several different processes occurred, however, between me hitting "return" and the page finally being rendered. 
 
 ---
 ### Step 1: The GET Request
@@ -161,7 +161,7 @@ knitr::include_graphics(path = "img/wikipedia.png")
 ---
 ### RESTful Database Querying: The GET Request
 
-* URL we supply must be constructed so that the resulting request can be interpreted and succesfully acted upon by the server.  
+* URL we supply must be constructed so that the resulting request can be interpreted and successfully acted upon by the server.  
 
 * Likely that the character string must encode **search terms and/or filtering parameters**, as well as one or more **authentication codes**.  
 
@@ -190,7 +190,7 @@ knitr::include_graphics(path = "img/wikipedia.png")
 
 Here are some APIs that may be useful to you:
 
-- [NYT Article API](http://developer.nytimes.com/):  metdata (title, summaries, dates, etc) from all NYR articles in their archive.
+- [NYT Article API](http://developer.nytimes.com/):  metadata (title, summaries, dates, etc) from all NYT articles in their archive.
 
 - [GeoNames geographical database](https://www.geonames.org/):  lots of geographical information for all countries and other locations. The `geonames` package provides a wrapper for R.
 

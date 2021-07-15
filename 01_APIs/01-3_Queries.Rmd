@@ -7,13 +7,13 @@ output: html_document
 
 ## Writing API Queries
 
-If no wrapper package is available, we have to write our own API query, and format the response ourslves using R. This is trickier, but definitely do-able.
+If no wrapper package is available, we have to write our own API query, and format the response ourselves using R. This is trickier, but definitely do-able.
 
 In this unit, we'll practice constructing our own API queries using the New York Time's `Article API`. This API provides metadata (title, date, summary, etc) on all of New York Times articles.
 
 Fortunately, this API is [very well documented](https://developer.nytimes.com/docs/articlesearch-product/1/overview)!
 
-You can even try it out [here](http://developer.nytimes.com/io-docs).
+You can even try it out [here](https://developer.nytimes.com/get-started).
 
 Load the following packages to get started:
 
@@ -30,7 +30,7 @@ Likely the most challenging part of using web APIs is learning how to format you
 
 Most GET request URLs for API querying have three or four components:
 
-1. *Authenication Key/Token*: a user-specific character string appended to a base URL telling the server who is making the query; allows servers to efficiently manage database access
+1. *Authentication Key/Token*: a user-specific character string appended to a base URL telling the server who is making the query; allows servers to efficiently manage database access
 
 2. *Base URL*: a link stub that will be at the beginning of all calls to a given API; points the server to the location of an entire database
 
@@ -43,7 +43,7 @@ Let's go ahead and store the these values as variables:
 ```{r}
 key <- "Onz0BobMTn2IRJ7krcT5RXHknkGLqiaI"
 base.url <- "http://api.nytimes.com/svc/search/v2/articlesearch.json"
-search_term <- "John Mearsheimer"
+search_term <- "Mearsheimer"
 ```
 
 How did I know the `base.url`? I read the [documentation.](https://developer.nytimes.com/docs/articlesearch-product/1/routes/articlesearch.json/get). Notice that this `base.url` also includes the *response format*(`.jston`), so we don't need to configure that directly.
@@ -63,7 +63,7 @@ r$url
 
 #### Challenge 1: Adding a date range {-}
 
-What if we only want to search within a particular date range? The NYT Article Api allows us to specify start and end dates.
+What if we only want to search within a particular date range? The NYT Article API allows us to specify start and end dates.
 
 Alter the `get.request` code above so that the request only searches for articles in the year 2005.
 
@@ -71,7 +71,7 @@ You're gonna need to look at the documentation here to see how to do this.
 
 #### Challenge 2: Specifying a results page {-}
 
-The above will return the first 10 results. To get the next ten, you need to add a "page" parameter. Change the search parameters above to get the second 10 resuls.
+The above will return the first 10 results. To get the next ten, you need to add a "page" parameter. Change the search parameters above to get the second 10 results.
 
 ### Parsing the response
 
@@ -86,7 +86,7 @@ What you see here is JSON text, encoded as plain text. JSON stands for "Javascri
 
 We want to convert the results from JSON format to something easier to work with -- notably a data frame.  
 
-The **jsonlite** package provides several easy conversion functions for moving between JSON and vectors, data.frames, and lists. Let's use the function `fromJSON` to convert this response into something we can work with:
+The **jsonlite** package provides several easy conversion functions for moving between JSON and vectors, dataframes, and lists. Let's use the function `fromJSON` to convert this response into something we can work with:
 ```{r}
 # Convert JSON response to a dataframe
 response_df <- fromJSON(response, simplifyDataFrame = TRUE, flatten = TRUE)
@@ -128,7 +128,7 @@ docs <- response_df$response$docs
 
 ### Iteration through results pager
 
-That's great. But we only have 10 items. The original response said we had 168 hits! Which means we have to make 168 /10, or 17 requests to get them all. Sounds like a job for iteration!
+That's great. But we only have 10 items. The original response said we had 168 hits! Which means we have to make 150 /10, or 15 requests to get them all. Sounds like a job for iteration!
 
 First, let's write a function that passes a search term and a page number, and returns a dataframe of articles.
 
@@ -151,7 +151,7 @@ nytapi <- function(term = NULL, n){
     return(response_df$response$docs)
 }
 
-docs <- nytapi("John Mearsheimer", 2)
+docs <- nytapi("Mearsheimer", 2)
 ```
 
 Now, we're ready to iterate over each page. First, let's review what've done so far:
@@ -160,7 +160,7 @@ Now, we're ready to iterate over each page. First, let's review what've done so 
 # set key and base
 base.url = "http://api.nytimes.com/svc/search/v2/articlesearch.json" 
 key = "Onz0BobMTn2IRJ7krcT5RXHknkGLqiaI"
-search_term = "John Mearsheimer" #change me
+search_term = "Mearsheimer" #change me
   
 # Send GET request
 r <- GET(base.url, query = list(`q` = search_term,

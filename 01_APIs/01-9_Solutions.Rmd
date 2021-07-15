@@ -71,7 +71,6 @@ Which professors in the `profs1000` data use their iPhone to tweet? What percent
 ```{r}
 profs1000 %>%
   count(screen_name, source) %>%
-  arrange(desc(n)) %>%
   group_by(screen_name) %>%
   mutate(total_n = sum(n)) %>%
   mutate(percentage = n / total_n) %>%
