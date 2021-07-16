@@ -161,7 +161,7 @@ The HTML element is everything from the start tag to the end tag.
 
 | Tag        | Meaning           | 
 | ------------- |-------------  |
-| `<head>`     | page header (metadata, etc | 
+| `<head>`     | page header (metadata, etc) | 
 | `<body>`     | holds all of the content |
 | `<p>` | regular text (paragraph) |
 | `<h1>`, `<h2>`, `<h3>` | header text, levels 1, 2, 3  |
@@ -301,7 +301,7 @@ Find the CSS selectors for the following elements in the HTML above.
 
 * Install Selector Gadget on your browser by following instructions here: https://selectorgadget.com/
 
-* Run Selector Gadget and  click on the type of information you want to select. 
+* Run Selector Gadget and click on the type of information you want to select. 
 
 * Then click the pieces of information you **don't** want to keep. 
 

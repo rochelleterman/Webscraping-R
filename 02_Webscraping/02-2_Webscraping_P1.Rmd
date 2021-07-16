@@ -11,9 +11,9 @@ output:
 
 To demonstrate webscraping in R, we're going to collect records on presidential statements here: https://www.presidency.ucsb.edu/
 
-Let's say we're interested in how presidents speak about "space exploration". On the website, we punch in this search term, and we get the [following 295 results](https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100). 
+Let's say we're interested in how presidents speak about "space exploration". On the website, we punch in this search term, and we get the [following 346 results](https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100). 
 
-Our goal is to scrape these records, and store pertenant information in a dataframe. We will be doing this in two steps:
+Our goal is to scrape these records, and store pertinent information in a dataframe. We will be doing this in two steps:
 
 1. Write a function to scrape each individual record page (these notes).
 2. Use this function to loop through all results, and collect all pages (homework).
@@ -26,6 +26,7 @@ library(rvest)
 library(stringr)
 library(purrr)
 library(knitr)
+library(lubridate)
 ```
 
 ### Using `RVest` to Read HTML
@@ -44,7 +45,7 @@ document1 <- read_html("https://www.presidency.ucsb.edu/documents/special-messag
 #Let's take a look at the object we just created
 document1
 ```
-This is pretty messy. We need to use `RVest` to make this information more useable.
+This is pretty messy. We need to use `RVest` to make this information more usable.
 
 ### Find Page Elements
 
@@ -100,7 +101,7 @@ speaker <- html_nodes(document1, ".diet-title a") %>%
 speaker
 ```
 
-You can access a tag's attributes using `html_attr`. For example, we often want to get a URL from an `a` (link) element. This is the URL is the link "points" to. It's contained in the attribut `href`:
+You can access a tag's attributes using `html_attr`. For example, we often want to get a URL from an `a` (link) element. This is the URL is the link "points" to. It's contained in the attribute `href`:
 
 ```{r}
 speaker_link <- html_nodes(document1, ".diet-title a") %>% 

@@ -7,7 +7,7 @@ output: html_document
 
 ## Webscraping Part II
 
-In this week's lecture, we introduced some tools to collect pieces of data from individual presidential documents. For this assignment, we will be looking at __all__ documents in the database that contain the string "space exploration." Our goals in this problem set are:
+So far, we've introduced some tools to collect pieces of data from individual presidential documents. For this assignment, we will be looking at __all__ documents in the database that contain the string "space exploration." Our goals in this problem set are:
 
 1. To scrape all documents returned from [this search query](https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100)
 
@@ -88,8 +88,8 @@ Now, we can use `scrape_urls` to collect the URLs from all the pages of search r
 all_urls <- map(all_pages, scrape_urls) %>%
   unlist
 
-# uncomment to test -- should be 325 docs
-# length(all_urls)
+# uncomment to test -- should be 346 docs
+#length(all_urls)
 ```
 
 #### Step 3. Modify to full path
