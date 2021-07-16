@@ -32,6 +32,9 @@ remDr <- rD[["client"]]
 # check status
 remDr$getStatus()
 
+#open
+remDr$open()
+
 # navigate
 remDr$navigate("http://www.google.com")
 # obj$function("arg") 
@@ -103,6 +106,7 @@ polling_first <- polling_options[[2]]
 # click on that
 polling_first$clickElement()
 ```
+
 ```{r}
 # YOUR CODE HERE
 ```
@@ -120,7 +124,7 @@ Our selections brought us to a table. Now let's get the underlying html. First w
 
 ```{r}
 # select the table element
-table = remDr$findElement(using = "class", value = "table_data")
+table <- remDr$findElement(using = "class", value = "table_data")
 
 # extract html
 table_html <- table$getPageSource()

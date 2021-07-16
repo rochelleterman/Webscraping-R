@@ -72,7 +72,7 @@ Now if we want to get the different options in this drop down, we can do the sam
 district$selectTag() #returns options
 
 # store all elements for options
-district_options = district$findChildElements(using = "css selector", value = "option")
+district_options <- district$findChildElements(using = "css selector", value = "option")
 
 # get first option
 district_first <- district_options[[2]]

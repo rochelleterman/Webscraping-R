@@ -22,6 +22,9 @@ remDr <- rD[["client"]]
 # check status
 remDr$getStatus()
 
+#open
+remDr$open()
+
 # navigate
 remDr$navigate("https://elephrame.com/textbook/BLM/chart")
 ```
