@@ -13,7 +13,9 @@ In this unit, we'll practice constructing our own API queries using the New York
 
 Fortunately, this API is [very well documented](https://developer.nytimes.com/docs/articlesearch-product/1/overview)!
 
-You can even try it out [here](https://developer.nytimes.com/get-started).
+You can even try it out [here](https://developer.nytimes.com/docs/articlesearch-product/1/routes/articlesearch.json/get)
+
+You can register for an API key [here](https://developer.nytimes.com/get-started).
 
 Load the following packages to get started:
 
@@ -67,7 +69,7 @@ What if we only want to search within a particular date range? The NYT Article A
 
 Alter the `get.request` code above so that the request only searches for articles in the year 2005.
 
-You're gonna need to look at the documentation here to see how to do this.
+You're gonna need to look at the [documentation](https://developer.nytimes.com/docs/articlesearch-product/1/routes/articlesearch.json/get) to see how to do this.
 
 #### Challenge 2: Specifying a results page {-}
 
@@ -79,7 +81,7 @@ We can read the content of the server’s response using the `content()` functio
 
 ```{r} 
 response <- content(r, "text")
-substr(response, start = 1, stop = 1000)
+str_sub(response, start = 1, end = 1000)
 ```
 
 What you see here is JSON text, encoded as plain text. JSON stands for "Javascript object notation." Think of JSON like a nested array built on key/value pairs. 
@@ -128,7 +130,7 @@ docs <- response_df$response$docs
 
 ### Iteration through results pager
 
-That's great. But we only have 10 items. The original response said we had 168 hits! Which means we have to make 150 /10, or 15 requests to get them all. Sounds like a job for iteration!
+That's great. But we only have 10 items. The original response said we had 150 hits! Which means we have to make 150 /10, or 15 requests to get them all. Sounds like a job for iteration!
 
 First, let's write a function that passes a search term and a page number, and returns a dataframe of articles.
 

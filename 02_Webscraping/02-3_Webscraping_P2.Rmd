@@ -7,7 +7,7 @@ output: html_document
 
 ## Webscraping Part II
 
-So far, we've introduced some tools to collect pieces of data from individual presidential documents. For this assignment, we will be looking at __all__ documents in the database that contain the string "space exploration." Our goals in this problem set are:
+So far, we've introduced some tools to collect pieces of data from individual presidential documents. We now need to scrape __all__ documents in the database that contain the string "space exploration." Our goals are:
 
 1. To scrape all documents returned from [this search query](https://www.presidency.ucsb.edu/advanced-search?field-keywords=%22space+exploration%22&field-keywords2=&field-keywords3=&from%5Bdate%5D=&to%5Bdate%5D=&person2=&items_per_page=100)
 
@@ -45,11 +45,9 @@ scrape_docs <- function(URL){
 }
 ```
 
-### Solution
+We're now ready to use this function to scrape all the documents!
 
-There are likely many ways to achieve this task. Here's one solution:
-
-#### Step 1: Write function `scrape_urls` to scrape URLs of individual search results.
+### Step 1: Write function `scrape_urls` to scrape URLs of individual search results.
 
 The following function passes a page of search results, and returns a vector of URLs, each URL corresponding to an individual document.
 
@@ -74,7 +72,7 @@ scrape_test[1:10]
 
 #### Step 2. Iterate over results pager to collect all URLs
 
-`scrape_urls` collects all of the relative URLs from the first page of our search results (100 documents). While this is a good start, we have 4 pages of search results (325 results total) and need to collect the URLs of ALL results, from ALL result pages.
+`scrape_urls` collects all of the relative URLs from the first page of our search results (100 documents). While this is a good start, we have 4 pages of search results (346 results total) and need to collect the URLs of ALL results, from ALL result pages.
 
 First, let's grab the path of all 4 result pages, and store that result in an object called `all_pages`:
 
@@ -130,7 +128,7 @@ We'll print the dataframe's structure, write the csv, and we're done!
 
 ```{r}
 str(final_df)
-write.csv(final_df, "data/space.csv", row.names = F)
+write.csv(final_df, "02_Webscraping/data/space.csv", row.names = F)
 ```
 
 

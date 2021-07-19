@@ -84,13 +84,11 @@ district_name
 district_first$clickElement()
 ```
 
-### Challenge 1: Selecting from the `Polling Data` Menu
+### Selecting from the `Polling Data` Menu
 
-Fill in the code chunk below to select the first option from the  "Polling Date" drop down.
+Select the first option from the  "Polling Date" drop down.
 
 ```{r}
-# YOUR CODE HERE
-
 # find "polling" drop down
 polling <- remDr$findElement(using = "name", value = "election_date")
 
@@ -102,10 +100,6 @@ polling_first <- polling_options[[2]]
 
 # click on that
 polling_first$clickElement()
-```
-
-```{r}
-# YOUR CODE HERE
 ```
 
 ### Getting the results
