@@ -32,9 +32,6 @@ remDr <- rD[["client"]]
 # check status
 remDr$getStatus()
 
-#open
-remDr$open()
-
 # navigate
 remDr$navigate("http://www.google.com")
 # obj$function("arg") 

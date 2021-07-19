@@ -112,7 +112,7 @@ Our selections brought us to a table. Now let's get the underlying html. First w
 
 ```{r}
 # select the table element
-table = remDr$findElement(using = "class", value = "table_data")
+table <- remDr$findElement(using = "class", value = "table_data")
 
 # extract html
 table_html <- table$getPageSource()
@@ -240,3 +240,5 @@ select_district <- function(option_i){
 # get data for second option
 p2 <- select_district(2)
 ```
+
+
